@@ -1,8 +1,8 @@
-package src.edu.dataframe.column;
+package edu.dataframe.column;
 
-import src.edu.dataframe.DataFrameColumn;
+import edu.dataframe.DataFrameColumn;
 
-public class IntegerColumn extends DataFrameColumn<Integer, IntegerColumn> {
+public class IntegerColumn extends DataFrameColumn<Integer> {
 
     public IntegerColumn(String name) {
         super(name);

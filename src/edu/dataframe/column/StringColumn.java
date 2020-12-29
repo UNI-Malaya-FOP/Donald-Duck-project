@@ -1,10 +1,18 @@
-package src.edu.dataframe.column;
+package edu.dataframe.column;
 
-import src.edu.dataframe.DataFrameColumn;
+import edu.dataframe.DataFrameColumn;
 
-public class StringColumn extends DataFrameColumn<String, StringColumn> {
+public class StringColumn extends DataFrameColumn<String> {
+
+    protected StringColumn getSubClass() {
+        return this;
+    }
 
     public StringColumn(String name) {
         super(name);
+    }
+
+    public Class<String> getElementClass() {
+        return String.class;
     }
 }

@@ -1,20 +1,24 @@
-package src.edu.dataframe;
+package edu.dataframe;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class DataFrameColumn<T extends Comparable<T>, C extends DataFrameColumn<T,C>> {
+public class DataFrameColumn<T extends Comparable<T>> {
 
     String name;
     List<T> column = new ArrayList<>();
     DataFrameIndices indices = new DataFrameIndices();
 
-    public DataFrameColumn(String name) {
+    protected DataFrameColumn(String name) {
         this.name = name;
     }
 
     public void rename(String name) {
         this.name = name;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public int indexOf(T element) {

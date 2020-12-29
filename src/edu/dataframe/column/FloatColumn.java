@@ -1,8 +1,8 @@
-package src.edu.dataframe.column;
+package edu.dataframe.column;
 
-import src.edu.dataframe.DataFrameColumn;
+import edu.dataframe.DataFrameColumn;
 
-public class FloatColumn extends DataFrameColumn<Float, FloatColumn> {
+public class FloatColumn extends DataFrameColumn<Float> {
 
     public FloatColumn(String name) {
         super(name);
