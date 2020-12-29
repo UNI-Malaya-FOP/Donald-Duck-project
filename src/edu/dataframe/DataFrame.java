@@ -36,6 +36,15 @@ public interface DataFrame {
 
 
     /**
+     * Append an element to each column in DataFrame.
+     * @param elements to append in order.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if Object length does not match or type does not match.
+     */
+    DataFrame append(Object... elements) throws DataFrameException;
+
+
+    /**
      * Create an empty new DataFrame.
      * @return DataFrame for method chain.
      */
