@@ -1,4 +1,4 @@
-package src.edu.dataframe;
+package edu.dataframe;
 
 import java.util.ArrayList;
 import java.util.List;
