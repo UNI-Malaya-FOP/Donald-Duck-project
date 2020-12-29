@@ -10,4 +10,9 @@ public class DataFrameIndices {
     public void add(Integer i) {
         indices.add(i);
     }
+
+    @Override
+    public String toString() {
+        return "indices = " + indices;
+    }
 }
