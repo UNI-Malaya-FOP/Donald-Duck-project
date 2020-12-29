@@ -43,6 +43,13 @@ public interface DataFrame {
      */
     DataFrame append(Object... elements) throws DataFrameException;
 
+    /**
+     * Delete row at specific index.
+     * @param index of element to remove.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if index does not exist.
+     */
+    public DataFrame deleteRowByIndex(int index) throws DataFrameException;
 
     /**
      * Create an empty new DataFrame.

@@ -7,8 +7,20 @@ public class DataFrameIndices {
 
     List<Integer> indices = new ArrayList<>();
 
-    public void add(Integer i) {
-        indices.add(i);
+    public void add(int index) {
+        indices.add(index);
+    }
+
+    public void remove(int index) {
+        indices.remove(index);
+    }
+
+    public int indexOf(int index) {
+        return indices.indexOf(index);
+    }
+
+    public boolean contains(int index) {
+        return indices.contains(index);
     }
 
     @Override

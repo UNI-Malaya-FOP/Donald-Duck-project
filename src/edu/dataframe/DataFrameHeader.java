@@ -9,11 +9,18 @@ import java.util.HashMap;
 public class DataFrameHeader {
 
     ArrayList<String> names = new ArrayList<>();
+    HashMap<String, Integer> namesMap = new HashMap<>();
     HashMap<String, Class<? extends DataFrameColumn>> columnClassMap = new HashMap<>();
     HashMap<String, Class<? extends Comparable<?>>> typeClassMap = new HashMap<>();
+    private int size = 0;
+
+    public int indexOf(String name) {
+        return namesMap.get(name);
+    }
 
     public void add(String name, Class<? extends DataFrameColumn> columnClass) {
         names.add(name);
+        namesMap.put(name, size++);
         columnClassMap.put(name, columnClass);
         typeClassMap.put(name, getTyeClass(columnClass));
     }

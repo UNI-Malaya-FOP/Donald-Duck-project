@@ -38,8 +38,17 @@ public class DataFrameColumn<T extends Comparable<T>> {
         indices.add(column.size());
     }
 
+    public void remove(int index) {
+        column.remove(index);
+        indices.remove(index);
+    }
+
+    public void removeByIndex(int index) {
+        remove(indices.indexOf(index));
+    }
+
     @Override
     public String toString() {
-        return name + " \t= " + column + "\n" + indices;
+        return name + "\t= " + column + "\n" + indices;
     }
 }
