@@ -37,4 +37,9 @@ public class DataFrameColumn<T extends Comparable<T>> {
         column.add(element);
         indices.add(column.size());
     }
+
+    @Override
+    public String toString() {
+        return name + " \t= " + column + "\n" + indices;
+    }
 }
