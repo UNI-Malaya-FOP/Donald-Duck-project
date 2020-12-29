@@ -51,4 +51,6 @@ public interface DataFrame {
     static DataFrame create() {
         return new NewDataFrame();
     }
+
+    void printDebug();
 }

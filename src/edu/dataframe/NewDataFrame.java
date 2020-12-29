@@ -68,21 +68,8 @@ public class NewDataFrame implements DataFrame {
         return this;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public void printDebug() {
+        columns.forEach(System.out::println);
+    }
 }
