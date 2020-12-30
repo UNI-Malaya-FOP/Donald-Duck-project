@@ -1,9 +1,10 @@
 package edu.dataframe;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-public class DataFrameColumn<T extends Comparable<T>> {
+public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     String name;
     List<T> column = new ArrayList<>();
@@ -13,7 +14,7 @@ public class DataFrameColumn<T extends Comparable<T>> {
         this.name = name;
     }
 
-    public void rename(String name) {
+    private void rename(String name) {
         this.name = name;
     }
 
@@ -21,7 +22,8 @@ public class DataFrameColumn<T extends Comparable<T>> {
         return name;
     }
 
-    public int indexOf(T element) {
+    @SuppressWarnings("SuspiciousMethodCalls")
+    public int indexOf(Object element) {
         return column.indexOf(element);
     }
 
@@ -35,7 +37,7 @@ public class DataFrameColumn<T extends Comparable<T>> {
 
     public void append(T element) {
         column.add(element);
-        indices.add(column.size());
+        indices.addIndex();
     }
 
     public void remove(int index) {
@@ -43,12 +45,17 @@ public class DataFrameColumn<T extends Comparable<T>> {
         indices.remove(index);
     }
 
-    public void removeByIndex(int index) {
-        remove(indices.indexOf(index));
+    public void replace(int index, T element) {
+        column.set(index, element);
     }
 
     @Override
     public String toString() {
         return name + "\t= " + column + "\n" + indices;
+    }
+
+    @Override
+    public Iterator<T> iterator() {
+        return column.listIterator();
     }
 }
