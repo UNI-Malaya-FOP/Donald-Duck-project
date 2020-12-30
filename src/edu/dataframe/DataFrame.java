@@ -1,6 +1,38 @@
 package edu.dataframe;
 
+import edu.dataframe.column.*;
+
 public interface DataFrame {
+
+    /**
+     * Get header of DataFrame
+     * @return Header
+     */
+    DataFrameHeader getHeader();
+
+    /**
+     * Get Integer column of DataFrame.
+     * @param name of Integer column.
+     * @return Integer column.
+     * @throws DataFrameException if Integer column does not exist.
+     */
+    IntegerColumn getIntegerColumn(String name) throws DataFrameException;
+
+    /**
+     * Get Float column of DataFrame.
+     * @param name of Float column.
+     * @return Float column.
+     * @throws DataFrameException if Float column does not exist.
+     */
+    FloatColumn getFloatColumn(String name) throws DataFrameException;
+
+    /**
+     * Get String column of DataFrame.
+     * @param name of column.
+     * @return String column.
+     * @throws DataFrameException if String column does not exist.
+     */
+    StringColumn getStringColumn(String name) throws DataFrameException;
 
     /**
      * Add a column to DataFrame.
@@ -49,7 +81,25 @@ public interface DataFrame {
      * @return DataFrame for method chain.
      * @throws DataFrameException if index does not exist.
      */
-    public DataFrame deleteRowByIndex(int index) throws DataFrameException;
+    DataFrame deleteRowByIndex(int index) throws DataFrameException;
+
+    /**
+     * Delete first row with specified element in a specified column.
+     * @param name of column.
+     * @param element to delete.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or element does not exist.
+     */
+    DataFrame deleteFirstRow(String name, Object element) throws DataFrameException;
+
+    /**
+     * Delete all row with specified element in a specified column.
+     * @param name of column.
+     * @param element to delete.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or element does not exist
+     */
+    DataFrame deleteAllRow(String name, Object element) throws DataFrameException;
 
     /**
      * Create an empty new DataFrame.
@@ -59,5 +109,8 @@ public interface DataFrame {
         return new NewDataFrame();
     }
 
+    /**
+     * Print debug version for debugging
+     */
     void printDebug();
 }
