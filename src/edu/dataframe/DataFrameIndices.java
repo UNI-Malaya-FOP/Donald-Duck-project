@@ -5,7 +5,12 @@ import java.util.List;
 
 public class DataFrameIndices {
 
+    private int index = 1;
     List<Integer> indices = new ArrayList<>();
+
+    public void addIndex() {
+        indices.add(index++);
+    }
 
     public void add(int index) {
         indices.add(index);
