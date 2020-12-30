@@ -50,4 +50,13 @@ public class DataFrameHeader {
     public Class<? extends Comparable<?>> getTypeClass(Integer index) {
         return typeClassMap.get(names.get(index));
     }
+
+    public void print() {
+        names.forEach(name -> System.out.print(name + "\t\t\t"));
+        System.out.println();
+        names.forEach(name -> System.out.print(typeClassMap.get(name).getSimpleName() + "\t\t\t"));
+        System.out.println();
+        names.forEach(name -> System.out.print(columnClassMap.get(name).getSimpleName() + "\t"));
+        System.out.println();
+    }
 }
