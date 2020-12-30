@@ -67,6 +67,7 @@ public class NewDataFrame implements DataFrame {
                     column.size(), rowNum));
         if(columns.containsKey(column.getName()))
             throw new DataFrameException("Column " + column.getName() + " already exist.");
+        indices.copyTo(column);
         names.add(column.getName());
         columns.put(column.getName(), column);
         header.add(column.getName(), column.getClass());
@@ -124,10 +125,12 @@ public class NewDataFrame implements DataFrame {
             throw new DataFrameException(String.format("Index: %d is out of bounds for row number: %d.", index, rowNum));
         for (String name : names)
             getColumn(name).remove(index);
+        indices.remove(index);
         rowNum--;
         return this;
     }
 
+    @Override
     public DataFrame deleteRowByIndex(int index) throws DataFrameException {
         if (!indices.contains(index))
             throw new DataFrameException(String.format("Index: %d does not exist.", index));

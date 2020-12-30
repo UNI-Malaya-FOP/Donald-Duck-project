@@ -6,7 +6,7 @@ import java.util.List;
 public class DataFrameIndices {
 
     private int index = 1;
-    List<Integer> indices = new ArrayList<>();
+    private final List<Integer> indices = new ArrayList<>();
 
     public void addIndex() {
         indices.add(index++);
@@ -26,6 +26,15 @@ public class DataFrameIndices {
 
     public boolean contains(int index) {
         return indices.contains(index);
+    }
+
+    private void copyTo(List<Integer> indices) {
+        indices.clear();
+        indices.addAll(this.indices);
+    }
+
+    public void copyTo(DataFrameColumn<?> column) {
+        copyTo(column.getIndices().indices);
     }
 
     @Override

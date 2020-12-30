@@ -22,6 +22,10 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
         return name;
     }
 
+    public DataFrameIndices getIndices() {
+        return indices;
+    }
+
     @SuppressWarnings("SuspiciousMethodCalls")
     public int indexOf(Object element) {
         return column.indexOf(element);
