@@ -28,6 +28,18 @@ public class DataFrameHeader implements Iterable<String> {
         typeClassMap.put(name, getTyeClass(columnClass));
     }
 
+    public void remove(String name) {
+        names.remove(name);
+        namesMap.remove(name);
+        typeClassMap.remove(name);
+        columnClassMap.remove(name);
+    }
+
+    public void remove(int index) {
+        String name = names.get(index);
+        remove(name);
+    }
+
     public Class<? extends DataFrameColumn> getColumnClass (String name) {
         return columnClassMap.get(name);
     }
