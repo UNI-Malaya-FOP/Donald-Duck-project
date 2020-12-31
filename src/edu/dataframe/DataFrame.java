@@ -102,6 +102,60 @@ public interface DataFrame {
     DataFrame deleteAllRow(String name, Object element) throws DataFrameException;
 
     /**
+     * Delete all row with null in specified columns.
+     * @param names of column.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or null does not exist.
+     */
+    DataFrame dropNull(String... names) throws DataFrameException;
+
+    /**
+     * Delete all row with first duplicate at specified columns.
+     * @param names of columns.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or duplicate does not exist.
+     */
+    DataFrame dropDuplicate(String... names) throws DataFrameException;
+
+    /**
+     * Delete all row except keep with first duplicate at specified column.
+     * @param name of column.
+     * @param keep number of column.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or duplicate does not exist.
+     */
+    DataFrame dropDuplicate(String name, int keep) throws DataFrameException;
+
+    /**
+     * Delete all row except keep with first duplicate at specified columns.
+     * @param names of columns.
+     * @param keep number of column.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or duplicate does not exist.
+     */
+    DataFrame dropDuplicate(String[] names, int keep) throws DataFrameException;
+
+    /**
+     * Delete all row except keep with first duplicate at specified column.
+     * @param name of column.
+     * @param keep first or last of duplicate.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or duplicate does not exist.
+     * @throws UnsupportedOperationException if ordinal is not valid or less than 1 or more than 10.
+     */
+    DataFrame dropDuplicate(String name, String keep) throws DataFrameException, UnsupportedOperationException;
+
+    /**
+     * Delete all row except keep with first duplicate at specified columns.
+     * @param names of columns.
+     * @param keep first or last of duplicate.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or duplicate does not exist.
+     * @throws UnsupportedOperationException if ordinal is not valid or less than 1 or more than 10.
+     */
+    DataFrame dropDuplicate(String[] names, String keep) throws DataFrameException, UnsupportedOperationException;
+
+    /**
      * Create an empty new DataFrame.
      * @return DataFrame for method chain.
      */

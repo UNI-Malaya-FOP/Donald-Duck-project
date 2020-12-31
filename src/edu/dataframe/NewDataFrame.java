@@ -3,16 +3,17 @@ package edu.dataframe;
 import edu.dataframe.column.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class NewDataFrame implements DataFrame {
 
     int rowNum = 0;
     int columnNum = 0;
-    DataFrameHeader header = new DataFrameHeader();
-    DataFrameIndices indices = new DataFrameIndices();
-    ArrayList<String> names = new ArrayList<>();
-    HashMap<String, DataFrameColumn<?>> columns = new HashMap<>();
+    private final DataFrameHeader header = new DataFrameHeader();
+    private final DataFrameIndices indices = new DataFrameIndices();
+    private final ArrayList<String> names = new ArrayList<>();
+    private final HashMap<String, DataFrameColumn<?>> columns = new HashMap<>();
 
     public DataFrameHeader getHeader() {
         return header;
@@ -104,7 +105,6 @@ public class NewDataFrame implements DataFrame {
             var columnClass = header.getColumnClass(i);
             var elementClass = header.getTypeClass(i);
             try {
-                String name = names.get(i);
                 var column = columnClass.cast(getColumn(i));
                 var element = elementClass.cast(elements[i]);
                 column.append(element);
@@ -122,7 +122,9 @@ public class NewDataFrame implements DataFrame {
 
     private DataFrame deleteRow(int index) throws DataFrameException {
         if (index > rowNum)
-            throw new DataFrameException(String.format("Index: %d is out of bounds for row number: %d.", index, rowNum));
+            throw new DataFrameException(
+                    "Index: %d is out of bounds for row number: %d."
+                            .formatted(index, rowNum));
         for (String name : names)
             getColumn(name).remove(index);
         indices.remove(index);
@@ -133,7 +135,7 @@ public class NewDataFrame implements DataFrame {
     @Override
     public DataFrame deleteRowByIndex(int index) throws DataFrameException {
         if (!indices.contains(index))
-            throw new DataFrameException(String.format("Index: %d does not exist.", index));
+            throw new DataFrameException("Index: %d does not exist.".formatted(index));
         return deleteRow(indices.indexOf(index));
     }
 
@@ -141,7 +143,7 @@ public class NewDataFrame implements DataFrame {
     public DataFrame deleteFirstRow(String name, Object element) throws DataFrameException {
         int index = getColumn(name).indexOf(element);
         if (index == -1)
-            throw new DataFrameException("Element " + element + " does not exist");
+            throw new DataFrameException("Element %s does not exist".formatted(element));
         return deleteRow(index);
     }
 
@@ -154,6 +156,65 @@ public class NewDataFrame implements DataFrame {
             deleteRow(index);
             index = column.indexOf(element);
         }
+        return this;
+    }
+
+    @Override
+    public DataFrame dropNull(String... names) throws DataFrameException {
+        for (String name : names)
+            deleteAllRow(name, null);
+        return this;
+    }
+
+    @Override
+    public DataFrame dropDuplicate(String... names) throws DataFrameException {
+        for (String name : names) {
+            DataFrameColumn<?> column = getColumn(name);
+            Object element = column.getFirstDuplicate();
+            deleteAllRow(name, element);
+        }
+        return this;
+    }
+
+    @Override
+    public DataFrame dropDuplicate(String name, int keep) throws DataFrameException {
+        try {
+            DataFrameColumn<?> column = getColumn(name);
+            Object[] indices = column.getFirstDuplicateIndices().toArray();
+            for (int i = indices.length - 1; i >= 0; i--) {
+                if (i != keep)
+                    deleteRow((Integer) indices[i]);
+            }
+            return this;
+        } catch (NullPointerException e) {
+            throw new DataFrameException("Column %s does not contain duplicate.".formatted(name));
+        }
+    }
+
+    @Override
+    public DataFrame dropDuplicate(String[] names, int keep) throws DataFrameException {
+        for (String name : names)
+            dropDuplicate(name, keep);
+        return this;
+    }
+
+    @Override
+    public DataFrame dropDuplicate(String name, String keep) throws DataFrameException {
+        DataFrameColumn<?> column = getColumn(name);
+        int length = column.getFirstDuplicateIndices().size();
+        if (keep.equalsIgnoreCase("first"))
+            dropDuplicate(name, 0);
+        else if (keep.equalsIgnoreCase("last"))
+            dropDuplicate(name, length - 1);
+        else
+            throw new DataFrameException("Keep %s is not valid for first or last.".formatted(keep));
+        return this;
+    }
+
+    @Override
+    public DataFrame dropDuplicate(String[] names, String keep) throws DataFrameException {
+        for (String name : names)
+            dropDuplicate(name, keep);
         return this;
     }
 
