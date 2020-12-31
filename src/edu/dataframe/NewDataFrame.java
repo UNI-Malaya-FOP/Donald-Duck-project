@@ -374,6 +374,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
                 System.out.println();
                 System.out.print(indices.get(i) + "\t" + getRow(i));
             }
+            System.out.println();
         } catch (DataFrameException e) {
             e.addSuppressed(e);
         }
