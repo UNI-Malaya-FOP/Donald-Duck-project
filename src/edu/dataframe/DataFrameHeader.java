@@ -2,17 +2,20 @@ package edu.dataframe;
 
 import edu.dataframe.column.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.*;
 
 @SuppressWarnings("rawtypes")
-public class DataFrameHeader {
+public class DataFrameHeader implements Iterable<String> {
 
     private final ArrayList<String> names = new ArrayList<>();
     private final HashMap<String, Integer> namesMap = new HashMap<>();
     private final HashMap<String, Class<? extends DataFrameColumn>> columnClassMap = new HashMap<>();
     private final HashMap<String, Class<? extends Comparable<?>>> typeClassMap = new HashMap<>();
     private int size = 0;
+
+    public Set<String> getNames() {
+        return new HashSet<>(names);
+    }
 
     public int indexOf(String name) {
         return namesMap.get(name);
@@ -58,5 +61,10 @@ public class DataFrameHeader {
         System.out.println();
         names.forEach(name -> System.out.print(columnClassMap.get(name).getSimpleName() + "\t"));
         System.out.println();
+    }
+
+    @Override
+    public Iterator<String> iterator() {
+        return names.iterator();
     }
 }
