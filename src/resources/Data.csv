@@ -1,4 +1,4 @@
-ID,Name,Age
-1,Elly,23
-2,Iris,21
-3,Lily,21
+Name,Department,CurrentCGPA,Expected Graduated,Actual Graduation Salary
+Meow,Artificial Intelligence,3.7,10000000,1000
+Woof,Software Engineer,3,4200,4200
+LWY,Information System,4.3,1000,1000000
