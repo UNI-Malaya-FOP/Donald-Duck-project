@@ -3,10 +3,11 @@ package edu.dataframe;
 import edu.dataframe.column.*;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Set;
 
-public class NewDataFrame implements DataFrame {
+public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
 
     int rowNum = 0;
     int columnNum = 0;
@@ -14,6 +15,16 @@ public class NewDataFrame implements DataFrame {
     private final DataFrameIndices indices = new DataFrameIndices();
     private final ArrayList<String> names = new ArrayList<>();
     private final HashMap<String, DataFrameColumn<?>> columns = new HashMap<>();
+
+    @Override
+    public int getRowNumber() {
+        return rowNum;
+    }
+
+    @Override
+    public int getColumnNumber() {
+        return columnNum;
+    }
 
     public DataFrameHeader getHeader() {
         return header;
@@ -26,7 +37,7 @@ public class NewDataFrame implements DataFrame {
         return columns.get(name);
     }
 
-    private DataFrameColumn<?> getColumn(int index) throws DataFrameException {
+    protected DataFrameColumn<?> getColumn(int index) throws DataFrameException {
         return getColumn(names.get(index));
     }
 
@@ -64,7 +75,7 @@ public class NewDataFrame implements DataFrame {
     public DataFrame addColumn(DataFrameColumn<?> column) throws DataFrameException {
         if(column.size() != rowNum)
             throw new DataFrameException(String.format(
-                    "Column size: %d does not match for row number: %d.",
+                    "Column size (%d) does not match for (%d).",
                     column.size(), rowNum));
         if(columns.containsKey(column.getName()))
             throw new DataFrameException("Column " + column.getName() + " already exist.");
@@ -78,19 +89,19 @@ public class NewDataFrame implements DataFrame {
 
     @Override
     public DataFrame addIntegerColumn(String name) throws DataFrameException {
-        IntegerColumn column = new IntegerColumn(name);
+        IntegerColumn column = new IntegerColumn(name, this);
         return addColumn(column);
     }
 
     @Override
     public DataFrame addFloatColumn(String name) throws DataFrameException {
-        FloatColumn column = new FloatColumn(name);
+        FloatColumn column = new FloatColumn(name, this);
         return addColumn(column);
     }
 
     @Override
     public DataFrame addStringColumn(String name) throws DataFrameException {
-        StringColumn column = new StringColumn(name);
+        StringColumn column = new StringColumn(name, this);
         return addColumn(column);
     }
 
@@ -120,6 +131,11 @@ public class NewDataFrame implements DataFrame {
         return this;
     }
 
+    public DataFrame appendRow(DataFrameRow row) throws DataFrameException {
+        append(row.toArray());
+        return this;
+    }
+
     private DataFrame deleteRow(int index) throws DataFrameException {
         if (index > rowNum)
             throw new DataFrameException(
@@ -143,7 +159,7 @@ public class NewDataFrame implements DataFrame {
     public DataFrame deleteFirstRow(String name, Object element) throws DataFrameException {
         int index = getColumn(name).indexOf(element);
         if (index == -1)
-            throw new DataFrameException("Element %s does not exist".formatted(element));
+            throw new DataFrameException("Element (%s) does not exist".formatted(element));
         return deleteRow(index);
     }
 
@@ -187,7 +203,7 @@ public class NewDataFrame implements DataFrame {
             }
             return this;
         } catch (NullPointerException e) {
-            throw new DataFrameException("Column %s does not contain duplicate.".formatted(name));
+            throw new DataFrameException("Column (%s) does not contain duplicate.".formatted(name));
         }
     }
 
@@ -219,6 +235,48 @@ public class NewDataFrame implements DataFrame {
     }
 
     @Override
+    public DataFrame concatX(DataFrame dataFrame) throws DataFrameException {
+        NewDataFrame newDataFrame;
+        if (dataFrame instanceof NewDataFrame)
+            newDataFrame = (NewDataFrame) dataFrame;
+        else
+            throw new DataFrameException("DataFrame does not created properly.");
+        Set<String> newNames = newDataFrame.header.getNames();
+        for (String name : names) {
+            if (newNames.contains(name))
+                throw new DataFrameException("Column name (%s) is duplicated.".formatted(name));
+        }
+        for (String name: newDataFrame.header) {
+            this.addColumn(newDataFrame.getColumn(name));
+        }
+        return this;
+    }
+
+    @Override
+    public DataFrame concatY(DataFrame dataFrame) throws DataFrameException {
+        NewDataFrame newDataFrame;
+        if (dataFrame instanceof NewDataFrame)
+            newDataFrame = (NewDataFrame) dataFrame;
+        else
+            throw new DataFrameException("DataFrame does not created properly.");
+        Set<String> newNames = newDataFrame.header.getNames();
+        for (String name : names) {
+            if (!newNames.contains(name))
+                throw new DataFrameException("Column name (%s) does not exist in DataFrame to concat.".formatted(name));
+        }
+        DataFrameHeader header = newDataFrame.header;
+        for (String name: newDataFrame.header) {
+            if (header.getColumnClass(name) != this.header.getColumnClass(name))
+                throw new DataFrameException("Column class (%s) does not match (%s).".formatted
+                        (header.getColumnClass(name).getSimpleName(), this.header.getColumnClass(name).getSimpleName()));
+        }
+        for (DataFrameRow row : newDataFrame) {
+            this.appendRow(row);
+        }
+        return this;
+    }
+
+    @Override
     public void printDebug() {
         try {
             for (String name : names)
@@ -226,5 +284,10 @@ public class NewDataFrame implements DataFrame {
         } catch ( DataFrameException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Override
+    public Iterator<DataFrameRow> iterator() {
+        return new DataFrameIterator(this);
     }
 }

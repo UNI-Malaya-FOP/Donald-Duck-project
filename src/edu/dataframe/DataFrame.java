@@ -2,7 +2,11 @@ package edu.dataframe;
 
 import edu.dataframe.column.*;
 
-public interface DataFrame {
+public interface DataFrame extends Iterable<DataFrameRow> {
+
+    int getRowNumber();
+
+    int getColumnNumber();
 
     /**
      * Get header of DataFrame
@@ -154,6 +158,22 @@ public interface DataFrame {
      * @throws UnsupportedOperationException if ordinal is not valid or less than 1 or more than 10.
      */
     DataFrame dropDuplicate(String[] names, String keep) throws DataFrameException, UnsupportedOperationException;
+
+    /**
+     * Concat another DataFrame to the left of current DataFrame.
+     * @param dataFrame to concat to the left.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column in both DataFrame hs the same name or row number does not match.
+     */
+    DataFrame concatX(DataFrame dataFrame) throws DataFrameException;
+
+    /**
+     * Concat another DataFrame to the below of current DataFrame.
+     * @param dataFrame to concat below.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column number does not match or column has different properties.
+     */
+    DataFrame concatY(DataFrame dataFrame) throws DataFrameException;
 
     /**
      * Create an empty new DataFrame.
