@@ -2,6 +2,7 @@ package edu.dataframe.column;
 
 import edu.dataframe.DataFrame;
 import edu.dataframe.DataFrameColumn;
+import edu.dataframe.calculator.FloatCalculator;
 
 public class FloatColumn extends DataFrameColumn<Float> {
 
@@ -11,5 +12,10 @@ public class FloatColumn extends DataFrameColumn<Float> {
 
     public FloatColumn(String name) {
         super(name, DataFrame.create());
+    }
+
+    @Override
+    public FloatCalculator calculate() {
+        return new FloatCalculator(column, getTempMap());
     }
 }

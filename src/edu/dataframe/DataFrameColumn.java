@@ -1,6 +1,7 @@
 package edu.dataframe;
 
 import edu.dataframe.column.*;
+import edu.dataframe.calculator.Calculator;
 
 import java.util.*;
 import java.util.function.Function;
@@ -11,7 +12,7 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     private String name;
     private NewDataFrame dataFrame;
-    private final List<T> column = new ArrayList<>();
+    protected final List<T> column = new ArrayList<>();
     private final DataFrameIndices indices = new DataFrameIndices();
 
     protected DataFrameColumn(String name, DataFrame dataFrame) {
@@ -124,7 +125,7 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
         dataFrame.getColumnChange(this, howChange);
     }
 
-    private HashMap<T, List<Integer>> getTempMap() {
+    protected HashMap<T, List<Integer>> getTempMap() {
         HashMap<T, List<Integer>> map = new HashMap<>();
         for (int i = 0; i < column.size(); i++) {
             if (!map.containsKey(column.get(i))) {
@@ -203,6 +204,10 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     protected void resetIndices() {
         indices.resetIndices();
+    }
+
+    public Calculator<T> calculate() {
+        return new Calculator<>(column, getTempMap());
     }
 
     @Override
