@@ -10,6 +10,6 @@ public class StringColumn extends DataFrameColumn<String> {
     }
 
     public StringColumn(String name) {
-        super(name, null);
+        super(name, DataFrame.create());
     }
 }

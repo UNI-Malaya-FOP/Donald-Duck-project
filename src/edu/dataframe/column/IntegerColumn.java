@@ -10,6 +10,6 @@ public class IntegerColumn extends DataFrameColumn<Integer> {
     }
 
     public IntegerColumn(String name) {
-        super(name, null);
+        super(name, DataFrame.create());
     }
 }

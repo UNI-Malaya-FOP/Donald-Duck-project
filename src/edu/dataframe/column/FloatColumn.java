@@ -10,6 +10,6 @@ public class FloatColumn extends DataFrameColumn<Float> {
     }
 
     public FloatColumn(String name) {
-        super(name, null);
+        super(name, DataFrame.create());
     }
 }
