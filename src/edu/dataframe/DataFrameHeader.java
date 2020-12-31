@@ -8,10 +8,10 @@ import java.util.HashMap;
 @SuppressWarnings("rawtypes")
 public class DataFrameHeader {
 
-    ArrayList<String> names = new ArrayList<>();
-    HashMap<String, Integer> namesMap = new HashMap<>();
-    HashMap<String, Class<? extends DataFrameColumn>> columnClassMap = new HashMap<>();
-    HashMap<String, Class<? extends Comparable<?>>> typeClassMap = new HashMap<>();
+    private final ArrayList<String> names = new ArrayList<>();
+    private final HashMap<String, Integer> namesMap = new HashMap<>();
+    private final HashMap<String, Class<? extends DataFrameColumn>> columnClassMap = new HashMap<>();
+    private final HashMap<String, Class<? extends Comparable<?>>> typeClassMap = new HashMap<>();
     private int size = 0;
 
     public int indexOf(String name) {
