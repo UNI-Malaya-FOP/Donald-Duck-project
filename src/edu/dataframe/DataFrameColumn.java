@@ -5,15 +5,20 @@ import java.util.*;
 public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     private String name;
+    private final DataFrame dataFrame;
     private final List<T> column = new ArrayList<>();
     private final DataFrameIndices indices = new DataFrameIndices();
 
-    protected DataFrameColumn(String name) {
+    protected DataFrameColumn(String name, DataFrame dataFrame) {
+        this.dataFrame = dataFrame;
         this.name = name;
     }
 
-    private void rename(String name) {
-        this.name = name;
+    public void rename(String name) throws DataFrameException {
+        Set<String> names = dataFrame.getHeader().getNames();
+        if (!names.contains(name))
+            this.name = name;
+        throw new DataFrameException("Name " + name + " already exist.");
     }
 
     public String getName() {
@@ -73,12 +78,26 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
         return column.size();
     }
 
-    public void append(T element) {
+    public void doAppend(T element) throws DataFrameException {
+        if (dataFrame == null)
+            append(element);
+        else
+            throw new DataFrameException("doAppend only valid if column is not in the DataFrame");
+    }
+
+    protected void append(T element) {
         column.add(element);
         indices.addIndex();
     }
 
-    public void remove(int index) {
+    public void doRemove(int index) throws DataFrameException {
+        if (dataFrame == null)
+            remove(index);
+        else
+            throw new DataFrameException("doRemove only valid if column is not in the DataFrame");
+    }
+
+    protected void remove(int index) {
         column.remove(index);
         indices.remove(index);
     }
