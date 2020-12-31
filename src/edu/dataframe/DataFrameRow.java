@@ -10,7 +10,7 @@ public class DataFrameRow extends ArrayList<Object> {
     DataFrameRow(DataFrame dataFrame, int index) {
         this.dataFrame = (NewDataFrame) dataFrame;
         this.index = index;
-        addAll(index);
+        addAll();
     }
 
     public DataFrameRow() {
@@ -18,7 +18,7 @@ public class DataFrameRow extends ArrayList<Object> {
         this.index = null;
     }
 
-    private void addAll(Object o) {
+    private void addAll() {
         try {
             int size = dataFrame.getColumnNumber();
             for (int i = 0; i < size; i++) {
@@ -28,5 +28,14 @@ public class DataFrameRow extends ArrayList<Object> {
         } catch (DataFrameException e) {
             System.out.println(e.getMessage());
         }
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder s = new StringBuilder();
+        for (int i = 0; i < super.size(); i++) {
+            s.append(super.get(i)).append("\t");
+        }
+        return s.toString();
     }
 }
