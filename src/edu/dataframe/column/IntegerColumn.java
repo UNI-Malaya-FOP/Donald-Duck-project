@@ -5,7 +5,11 @@ import edu.dataframe.DataFrameColumn;
 
 public class IntegerColumn extends DataFrameColumn<Integer> {
 
-    public IntegerColumn(String name, DataFrame dataFrame) {
+    protected IntegerColumn(String name, DataFrame dataFrame) {
         super(name, dataFrame);
+    }
+
+    public IntegerColumn(String name) {
+        super(name, null);
     }
 }
