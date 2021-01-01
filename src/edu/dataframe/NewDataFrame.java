@@ -280,6 +280,28 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
     }
     //</editor-fold>
 
+    @SuppressWarnings("unchecked")
+    protected DataFrame replace(String name, int index, Object element) throws DataFrameException {
+        getColumn(name).replace(index, (Comparable<?>) element);
+        return this;
+    }
+
+    @Override
+    public DataFrame replaceByIndex(String name, int index, Object element) throws DataFrameException {
+        int position = indices.indexOf(index);
+        if (position == -1)
+            throw new DataFrameException("Index %d does not exist".formatted(index));
+        return replace(name, position, element);
+    }
+
+    @Override
+    public DataFrame replaceNull(String name, Object element) throws DataFrameException {
+        int position = getColumn(name).indexOf(null);
+        if (position == -1)
+            throw new DataFrameException("Null does not exist");
+        return replace(name, position, element);
+    }
+
     //<editor-fold desc="Concatenation">
     @Override
     public DataFrame concatX(DataFrame dataFrame) throws DataFrameException {
@@ -390,7 +412,6 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         }
         System.out.println(indices);
     }
-
 
     @Override
     public Iterator<DataFrameRow> iterator() {

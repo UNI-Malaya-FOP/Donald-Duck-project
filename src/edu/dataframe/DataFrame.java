@@ -91,7 +91,7 @@ public interface DataFrame extends Iterable<DataFrameRow> {
 
     /**
      * Get row by its position.
-     * @param defaultIndex of row
+     * @param position of row
      * @return row at specified index
      * @throws DataFrameException if position is more than row number.
      */
@@ -192,6 +192,25 @@ public interface DataFrame extends Iterable<DataFrameRow> {
      * @throws UnsupportedOperationException if ordinal is not valid or less than 1 or more than 10.
      */
     DataFrame dropDuplicate(String[] names, String keep) throws DataFrameException, UnsupportedOperationException;
+
+    /**
+     * Replace element at certain index in specified column with specified value.
+     * @param name of column.
+     * @param index to do the replace.
+     * @param element to replace at index.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or index does not exist.
+     */
+    DataFrame replaceByIndex(String name, int index, Object element) throws DataFrameException;
+
+    /**
+     * Replace first null in specified column with specified value.
+     * @param name of column.
+     * @param element to replace null.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or null does not exist.
+     */
+    DataFrame replaceNull(String name, Object element) throws DataFrameException;
 
     /**
      * Concat another DataFrame to the left of current DataFrame.
