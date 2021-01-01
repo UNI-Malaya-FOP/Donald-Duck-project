@@ -1,6 +1,7 @@
 package edu.dataframe.column;
 
 import edu.dataframe.DataFrame;
+import edu.dataframe.scaler.Scaler;
 import edu.dataframe.DataFrameColumn;
 import edu.dataframe.calculator.FloatCalculator;
 
@@ -17,5 +18,9 @@ public class FloatColumn extends DataFrameColumn<Float> {
     @Override
     public FloatCalculator calculate() {
         return new FloatCalculator(column, getTempMap());
+    }
+
+    public Scaler scaler() {
+        return new Scaler(column);
     }
 }
