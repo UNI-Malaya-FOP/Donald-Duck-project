@@ -4,9 +4,9 @@ import edu.dataframe.column.*;
 import edu.dataframe.calculator.Calculator;
 
 import java.util.*;
+import java.util.stream.Collectors;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
@@ -117,6 +117,19 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
         column.set(index, element);
     }
 
+    public void replaceNull(T element) {
+        int index = column.indexOf(null);
+        column.set(index, element);
+    }
+
+    public DataFrameColumn<T> replaceAll(Collection<T> elements) throws DataFrameException {
+        if (elements.size() != column.size())
+            throw new DataFrameException("(%d) element is not valid for (%d)".formatted(elements.size(),column.size()));
+        column.clear();
+        column.addAll(elements);
+        return this;
+    }
+
     public void sort(Comparator<T> comparator) {
         HashMap<T, List<Integer>> map = getTempMap();
         column.sort(comparator);
@@ -140,12 +153,14 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     private List<Integer> getHowChange(HashMap<T, List<Integer>> map) {
         List<Integer> howChange = new ArrayList<>();
-        T curr = null;
+        HashSet<Integer> changeSet = new HashSet<>();
         for (T element : column) {
-            T prev = curr;
-            curr = element;
-            if (curr != prev)
-                howChange.addAll(map.get(curr));
+            for (Integer index : map.get(element)) {
+                if (changeSet.add(index)) {
+                    howChange.add(index);
+                    break;
+                }
+            }
         }
         return howChange;
     }
@@ -160,7 +175,7 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
     }
 
     @SuppressWarnings("unchecked")
-    public <C extends DataFrameColumn<?>> C getSubColumn(String name) throws DataFrameException {
+    public <C extends DataFrameColumn<?>> C getNewSubColumn(String name) throws DataFrameException {
         var columnClass = dataFrame.getHeader().getColumnClass(this.name);
         if (columnClass == IntegerColumn.class) {
             return (C) new IntegerColumn(name);
@@ -174,7 +189,7 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     public DataFrameColumn<T> map(Function<T, T> function) throws DataFrameException {
         List<T> mapped = column.stream().map(function).collect(Collectors.toList());
-        DataFrameColumn<T> col = getSubColumn("mapped" + name);
+        DataFrameColumn<T> col = getNewSubColumn("mapped" + name);
         mapped.forEach(col::append);
         return col;
     }
@@ -187,7 +202,7 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     public DataFrameColumn<T> filter(Predicate<T> predicate) throws DataFrameException {
         List<T> filtered = column.stream().filter(predicate).collect(Collectors.toList());
-        DataFrameColumn<T> col = getSubColumn("filtered" + name);
+        DataFrameColumn<T> col = getNewSubColumn("filtered" + name);
         filtered.forEach(col::append);
         return col;
     }
@@ -208,6 +223,10 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     public Calculator<T> calculate() {
         return new Calculator<>(column, getTempMap());
+    }
+
+    public List<T> toList() {
+        return column;
     }
 
     @Override
