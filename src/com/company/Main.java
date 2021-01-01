@@ -1,10 +1,7 @@
 package com.company;
 
 import edu.dataframe.DataFrame;
-import edu.dataframe.DataFrameColumn;
 import edu.dataframe.DataFrameException;
-
-import java.util.Collections;
 
 public class Main {
 
@@ -18,13 +15,14 @@ public class Main {
                                 .append("Iris", 21, 49.9f)
                                 .append("Earl", 24, 94.9f)
                                 .append("Earl", 27, 95.9f)
-                                .append("Lily", 17, 73.7f)
-                                .append("Lily", 14, 71.7f);
-        dt.dropNull("Name");
-        dt.sortBy("Name", Collections.reverseOrder());
-        dt.getFloatColumn("Point").doMap(n -> n + 100);
+                                .append("Lily", 21, 73.7f)
+                                .append("Lily", 21, 71.7f);
+        dt.replaceNull("Name", "Lulu");
+        dt.sortBy("Name", true);
         dt.getIntegerColumn("Age").doFilter(n -> n > 20);
-        dt.resetIndices();
+        dt.getFloatColumn("Point").doMap(n -> n+100);
+        dt.replaceByIndex("Name", 4, "Aron");
+        dt.replaceByIndex("Name", 7, "Mary");
         dt.print();
     }
 }
