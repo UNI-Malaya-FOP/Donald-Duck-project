@@ -2,10 +2,7 @@ package edu.dataframe;
 
 import edu.dataframe.column.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 
 public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
 
@@ -30,6 +27,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         return header;
     }
 
+    //<editor-fold desc="Get column">
     @SuppressWarnings("rawtypes")
     private DataFrameColumn getColumn(String name) throws DataFrameException {
         if (!columns.containsKey(name))
@@ -47,7 +45,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         if(column instanceof IntegerColumn)
             return (IntegerColumn) column;
         throw new DataFrameException(String.format(
-                "%s is not valid for geIntegerColumn.",
+                "(%s) is not valid for geIntegerColumn.",
                 column.getClass().getSimpleName()));
     }
 
@@ -57,7 +55,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         if(column instanceof FloatColumn)
             return (FloatColumn) column;
         throw new DataFrameException(String.format(
-                "%s is not valid for getFloatColumn.",
+                "(%s) is not valid for getFloatColumn.",
                 column.getClass().getSimpleName()));
     }
 
@@ -67,18 +65,21 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         if(column instanceof StringColumn)
             return (StringColumn) column;
         throw new DataFrameException(String.format(
-                "%s is not valid for getStringColumn.",
+                "(%s) is not valid for getStringColumn.",
                 column.getClass().getSimpleName()));
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Add column">
     @Override
     public DataFrame addColumn(DataFrameColumn<?> column) throws DataFrameException {
         if(column.size() != rowNum)
             throw new DataFrameException(String.format(
-                    "Column size (%d) does not match for (%d).",
+                    "Column size (%d) does not match for (%d) row.",
                     column.size(), rowNum));
         if(columns.containsKey(column.getName()))
-            throw new DataFrameException("Column " + column.getName() + " already exist.");
+            throw new DataFrameException("Column (" + column.getName() + ") already exist.");
+        column.reDataFrame(this);
         indices.copyTo(column);
         names.add(column.getName());
         columns.put(column.getName(), column);
@@ -89,28 +90,66 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
 
     @Override
     public DataFrame addIntegerColumn(String name) throws DataFrameException {
-        IntegerColumn column = new IntegerColumn(name, this);
+        IntegerColumn column = new IntegerColumn(name);
         return addColumn(column);
     }
 
     @Override
     public DataFrame addFloatColumn(String name) throws DataFrameException {
-        FloatColumn column = new FloatColumn(name, this);
+        FloatColumn column = new FloatColumn(name);
         return addColumn(column);
     }
 
     @Override
     public DataFrame addStringColumn(String name) throws DataFrameException {
-        StringColumn column = new StringColumn(name, this);
+        StringColumn column = new StringColumn(name);
         return addColumn(column);
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Delete column">
+    private DataFrame deleteColumn(int index) throws DataFrameException {
+        if(index > columnNum)
+            throw new DataFrameException("Index (%d) out of bounds for (%d) column.".formatted(index, columnNum));
+        String name = names.get(index);
+        return deleteColumn(name);
+    }
+
+    @Override
+    public DataFrame deleteColumn(String name) throws DataFrameException {
+        if (!header.getNames().contains(name))
+            throw new DataFrameException("Column (%s) does not exist.".formatted(name));
+        columns.remove(name);
+        header.remove(name);
+        names.remove(name);
+        return this;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Get Row">
+    @Override
+    public DataFrameRow getRow(int position) throws DataFrameException {
+        if (position > rowNum)
+            throw new DataFrameException("Index (%d) of of bounds for (%d) row.".formatted(position, rowNum));
+        return new DataFrameRow(this, position);
+    }
+
+    @Override
+    public DataFrameRow getRowByIndex(int index) throws DataFrameException {
+        int position = indices.indexOf(index);
+        if (position == -1)
+            throw new DataFrameException("Index (%d) does not exist".formatted(index));
+        return getRow(position);
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Append row">
     @SuppressWarnings("unchecked")
     @Override
     public DataFrame append(Object... elements) throws DataFrameException {
         if (elements.length != columnNum)
             throw new DataFrameException(String.format(
-                    "Element length of %d does not match for length %d.",
+                    "Element length of (%d) does not match for (%d) column.",
                     elements.length, columnNum));
         for (int i = 0; i < elements.length; i++) {
             var columnClass = header.getColumnClass(i);
@@ -135,11 +174,13 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         append(row.toArray());
         return this;
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Delete row">
     private DataFrame deleteRow(int index) throws DataFrameException {
         if (index > rowNum)
             throw new DataFrameException(
-                    "Index: %d is out of bounds for row number: %d."
+                    "Index (%d) is out of bounds for row number (%d)."
                             .formatted(index, rowNum));
         for (String name : names)
             getColumn(name).remove(index);
@@ -151,7 +192,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
     @Override
     public DataFrame deleteRowByIndex(int index) throws DataFrameException {
         if (!indices.contains(index))
-            throw new DataFrameException("Index: %d does not exist.".formatted(index));
+            throw new DataFrameException("Index (%d) does not exist.".formatted(index));
         return deleteRow(indices.indexOf(index));
     }
 
@@ -174,14 +215,18 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         }
         return this;
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Drop null">
     @Override
     public DataFrame dropNull(String... names) throws DataFrameException {
         for (String name : names)
             deleteAllRow(name, null);
         return this;
     }
+    //</editor-fold>
 
+    //<editor-fold desc="Drop duplicate">
     @Override
     public DataFrame dropDuplicate(String... names) throws DataFrameException {
         for (String name : names) {
@@ -223,7 +268,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         else if (keep.equalsIgnoreCase("last"))
             dropDuplicate(name, length - 1);
         else
-            throw new DataFrameException("Keep %s is not valid for first or last.".formatted(keep));
+            throw new DataFrameException("Keep (%s) is not valid for (first) or (last).".formatted(keep));
         return this;
     }
 
@@ -233,7 +278,31 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
             dropDuplicate(name, keep);
         return this;
     }
+    //</editor-fold>
 
+    @SuppressWarnings("unchecked")
+    protected DataFrame replace(String name, int index, Object element) throws DataFrameException {
+        getColumn(name).replace(index, (Comparable<?>) element);
+        return this;
+    }
+
+    @Override
+    public DataFrame replaceByIndex(String name, int index, Object element) throws DataFrameException {
+        int position = indices.indexOf(index);
+        if (position == -1)
+            throw new DataFrameException("Index %d does not exist".formatted(index));
+        return replace(name, position, element);
+    }
+
+    @Override
+    public DataFrame replaceNull(String name, Object element) throws DataFrameException {
+        int position = getColumn(name).indexOf(null);
+        if (position == -1)
+            throw new DataFrameException("Null does not exist");
+        return replace(name, position, element);
+    }
+
+    //<editor-fold desc="Concatenation">
     @Override
     public DataFrame concatX(DataFrame dataFrame) throws DataFrameException {
         NewDataFrame newDataFrame;
@@ -268,12 +337,69 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         for (String name: newDataFrame.header) {
             if (header.getColumnClass(name) != this.header.getColumnClass(name))
                 throw new DataFrameException("Column class (%s) does not match (%s).".formatted
-                        (header.getColumnClass(name).getSimpleName(), this.header.getColumnClass(name).getSimpleName()));
+                        (header.getColumnClass(name).getSimpleName(),
+                        this.header.getColumnClass(name).getSimpleName()));
         }
         for (DataFrameRow row : newDataFrame) {
             this.appendRow(row);
         }
         return this;
+    }
+    //</editor-fold>
+
+    //<editor-fold desc="Sorting">
+    @SuppressWarnings("unchecked")
+    @Override
+    public DataFrame sortBy(String name, Comparator<?> comparator) throws DataFrameException {
+        getColumn(name).sort(comparator);
+        return this;
+    }
+
+    @Override
+    public DataFrame sortBy(String name) throws DataFrameException {
+        return sortBy(name, Comparator.naturalOrder());
+    }
+
+    @Override
+    public DataFrame sortBy(String name, Boolean ascending) throws DataFrameException {
+        if (ascending)
+            return sortBy(name);
+        else
+            return sortBy(name, Collections.reverseOrder());
+    }
+    //</editor-fold>
+
+    protected void getColumnChange(DataFrameColumn<?> changedColumn, List<Integer> howChange) {
+        indices.sortBy(howChange);
+        rowNum = indices.size();
+        for (String name: names) {
+            DataFrameColumn<?> column = columns.get(name);
+            if (column != changedColumn)
+                column.sortBy(howChange);
+        }
+    }
+
+    @Override
+    public void resetIndices() {
+        indices.resetIndices();
+        for (String name : names) {
+            columns.get(name).resetIndices();
+        }
+    }
+
+    @Override
+    public void print() {
+        try {
+            for (String name : names)
+                System.out.print("\t" + name);
+            for (int i = 0; i < rowNum; i++) {
+                System.out.println();
+                System.out.print(indices.get(i) + "\t" + getRow(i));
+            }
+            System.out.println();
+        } catch (DataFrameException e) {
+            e.addSuppressed(e);
+        }
     }
 
     @Override
@@ -284,6 +410,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         } catch ( DataFrameException e) {
             System.out.println(e.getMessage());
         }
+        System.out.println(indices);
     }
 
     @Override

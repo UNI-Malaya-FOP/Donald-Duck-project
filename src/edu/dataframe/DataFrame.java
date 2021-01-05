@@ -2,10 +2,20 @@ package edu.dataframe;
 
 import edu.dataframe.column.*;
 
+import java.util.Comparator;
+
 public interface DataFrame extends Iterable<DataFrameRow> {
 
+    /**
+     * Get number of row in DataFrame.
+     * @return number of column.
+     */
     int getRowNumber();
 
+    /**
+     * Get number of column in DataFrame.
+     * @return number of column.
+     */
     int getColumnNumber();
 
     /**
@@ -70,6 +80,30 @@ public interface DataFrame extends Iterable<DataFrameRow> {
      */
     DataFrame addStringColumn(String name) throws DataFrameException;
 
+
+    /**
+     * Delete column with specified name.
+     * @param name of new column.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist.
+     */
+    DataFrame deleteColumn(String name) throws DataFrameException;
+
+    /**
+     * Get row by its position.
+     * @param position of row
+     * @return row at specified index
+     * @throws DataFrameException if position is more than row number.
+     */
+    DataFrameRow getRow(int position) throws DataFrameException;
+
+    /**
+     * Get row by indices.
+     * @param index of row.
+     * @return row with specified index.
+     * @throws DataFrameException if index does not exist.
+     */
+    DataFrameRow getRowByIndex(int index) throws DataFrameException;
 
     /**
      * Append an element to each column in DataFrame.
@@ -160,6 +194,25 @@ public interface DataFrame extends Iterable<DataFrameRow> {
     DataFrame dropDuplicate(String[] names, String keep) throws DataFrameException, UnsupportedOperationException;
 
     /**
+     * Replace element at certain index in specified column with specified value.
+     * @param name of column.
+     * @param index to do the replace.
+     * @param element to replace at index.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or index does not exist.
+     */
+    DataFrame replaceByIndex(String name, int index, Object element) throws DataFrameException;
+
+    /**
+     * Replace first null in specified column with specified value.
+     * @param name of column.
+     * @param element to replace null.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist or null does not exist.
+     */
+    DataFrame replaceNull(String name, Object element) throws DataFrameException;
+
+    /**
      * Concat another DataFrame to the left of current DataFrame.
      * @param dataFrame to concat to the left.
      * @return DataFrame for method chain.
@@ -176,12 +229,45 @@ public interface DataFrame extends Iterable<DataFrameRow> {
     DataFrame concatY(DataFrame dataFrame) throws DataFrameException;
 
     /**
+     * Sort DataFrame by specified column and comparator.
+     * @param name of column.
+     * @param comparator for order.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist.
+     */
+    DataFrame sortBy(String name, Comparator<?> comparator) throws DataFrameException;
+
+    /**
+     * Sort DataFrame by specified column by ascending order.
+     * @param name of column.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist.
+     */
+    DataFrame sortBy(String name) throws DataFrameException;
+
+    /**
+     * Sort DataFrame by specified column by ascending or descending order.
+     * @param name of column.
+     * @param ascending order.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if column does not exist.
+     */
+    DataFrame sortBy(String name, Boolean ascending) throws DataFrameException;
+
+    /**
+     * Reset indices of the dataframe.
+     */
+    void resetIndices();
+
+    /**
      * Create an empty new DataFrame.
      * @return DataFrame for method chain.
      */
     static DataFrame create() {
         return new NewDataFrame();
     }
+
+    void print();
 
     /**
      * Print debug version for debugging

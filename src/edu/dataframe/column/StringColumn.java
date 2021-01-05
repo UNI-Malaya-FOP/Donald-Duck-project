@@ -5,7 +5,11 @@ import edu.dataframe.DataFrameColumn;
 
 public class StringColumn extends DataFrameColumn<String> {
 
-    public StringColumn(String name, DataFrame dataFrame) {
+    protected StringColumn(String name, DataFrame dataFrame) {
         super(name, dataFrame);
+    }
+
+    public StringColumn(String name) {
+        super(name, DataFrame.create());
     }
 }
