@@ -18,7 +18,7 @@ public class Main {
         DataFrame dt2 = DataFrame.load(url);
         dt2.print();
 
-        File file2 = new File("src\\resources\\CAvideos.csv");
+        File file2 = new File("src\\resources\\YoutubeVideos.csv");
         DataFrame dt3 = DataFrame.load(file2);
         dt3.print();
 
