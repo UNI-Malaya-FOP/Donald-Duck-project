@@ -2,6 +2,7 @@ package edu.dataframe.column;
 
 import edu.dataframe.DataFrame;
 import edu.dataframe.DataFrameColumn;
+import edu.dataframe.DataFrameException;
 
 public class StringColumn extends DataFrameColumn<String> {
 
@@ -9,7 +10,13 @@ public class StringColumn extends DataFrameColumn<String> {
         super(name, dataFrame);
     }
 
-    public StringColumn(String name) {
-        super(name, DataFrame.create());
+    public StringColumn(String name) throws DataFrameException {
+        super(name, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected  StringColumn getNewSubColumn(String name) throws DataFrameException {
+        return new StringColumn(name);
     }
 }

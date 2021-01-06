@@ -2,6 +2,7 @@ package edu.dataframe.column;
 
 import edu.dataframe.DataFrame;
 import edu.dataframe.DataFrameColumn;
+import edu.dataframe.DataFrameException;
 import edu.dataframe.calculator.IntegerCalculator;
 
 public class IntegerColumn extends DataFrameColumn<Integer> {
@@ -10,8 +11,14 @@ public class IntegerColumn extends DataFrameColumn<Integer> {
         super(name, dataFrame);
     }
 
-    public IntegerColumn(String name) {
-        super(name, DataFrame.create());
+    public IntegerColumn(String name) throws DataFrameException {
+        super(name, null);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Override
+    protected  IntegerColumn getNewSubColumn(String name) throws DataFrameException {
+        return new IntegerColumn(name);
     }
 
     @Override

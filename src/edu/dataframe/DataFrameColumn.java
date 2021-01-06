@@ -1,6 +1,5 @@
 package edu.dataframe;
 
-import edu.dataframe.column.*;
 import edu.dataframe.calculator.Calculator;
 
 import java.util.*;
@@ -8,10 +7,10 @@ import java.util.stream.Collectors;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
+public abstract class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     private String name;
-    private NewDataFrame dataFrame;
+    protected NewDataFrame dataFrame;
     protected final List<T> column = new ArrayList<>();
     private final DataFrameIndices indices = new DataFrameIndices();
 
@@ -25,8 +24,12 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
     }
 
     public void rename(String name) throws DataFrameException {
+        if (dataFrame == null) {
+            this.name = name;
+            return;
+        }
         Set<String> names = dataFrame.getHeader().getNames();
-        if (!dataFrame.getHeader().getNames().contains(name))
+        if (!names.contains(name))
             this.name = name;
         else
             throw new DataFrameException("Name " + name + " already exist.");
@@ -174,18 +177,7 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
         this.indices.sortBy(howChange);
     }
 
-    @SuppressWarnings("unchecked")
-    public <C extends DataFrameColumn<?>> C getNewSubColumn(String name) throws DataFrameException {
-        var columnClass = dataFrame.getHeader().getColumnClass(this.name);
-        if (columnClass == IntegerColumn.class) {
-            return (C) new IntegerColumn(name);
-        } else if (columnClass == FloatColumn.class) {
-            return (C) new FloatColumn(name);
-        } else if (columnClass == StringColumn.class) {
-            return (C) new StringColumn(name);
-        } else
-            throw new DataFrameException("This Column is not subclass of DataFrameColumn");
-    }
+    protected abstract <C extends DataFrameColumn<?>> C getNewSubColumn(String name) throws DataFrameException;
 
     public DataFrameColumn<T> map(Function<T, T> function) throws DataFrameException {
         List<T> mapped = column.stream().map(function).collect(Collectors.toList());
@@ -231,7 +223,7 @@ public class DataFrameColumn<T extends Comparable<T>> implements Iterable<T>{
 
     @Override
     public String toString() {
-        return name + "\t= " + column + "\n" + indices;
+        return name + " = " + column;
     }
 
     @Override
