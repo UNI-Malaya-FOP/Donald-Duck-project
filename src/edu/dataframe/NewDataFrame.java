@@ -6,8 +6,7 @@ import java.util.*;
 
 public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
 
-    int rowNum = 0;
-    int columnNum = 0;
+    private int rowNum = 0, columnNum = 0;
     private final DataFrameHeader header = new DataFrameHeader();
     private final DataFrameIndices indices = new DataFrameIndices();
     private final ArrayList<String> names = new ArrayList<>();
@@ -23,6 +22,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         return columnNum;
     }
 
+    @Override
     public DataFrameHeader getHeader() {
         return header;
     }
@@ -73,6 +73,10 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
     //<editor-fold desc="Add column">
     @Override
     public DataFrame addColumn(DataFrameColumn<?> column) throws DataFrameException {
+        if (columnNum == 0) {
+            column.getIndices().copyTo(indices);
+            rowNum = column.size();
+        }
         if(column.size() != rowNum)
             throw new DataFrameException(String.format(
                     "Column size (%d) does not match for (%d) row.",
@@ -174,6 +178,14 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
         append(row.toArray());
         return this;
     }
+
+    @Override
+    public DataFrame appendRows(List<DataFrameRow> rows) throws DataFrameException {
+        for (DataFrameRow row : rows)
+            appendRow(row);
+        return this;
+    }
+
     //</editor-fold>
 
     //<editor-fold desc="Delete row">
@@ -281,7 +293,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
     //</editor-fold>
 
     @SuppressWarnings("unchecked")
-    protected DataFrame replace(String name, int index, Object element) throws DataFrameException {
+    private DataFrame replace(String name, int index, Object element) throws DataFrameException {
         getColumn(name).replace(index, (Comparable<?>) element);
         return this;
     }
@@ -305,7 +317,7 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
     //<editor-fold desc="Concatenation">
     @Override
     public DataFrame concatX(DataFrame dataFrame) throws DataFrameException {
-        NewDataFrame newDataFrame;
+        final NewDataFrame newDataFrame;
         if (dataFrame instanceof NewDataFrame)
             newDataFrame = (NewDataFrame) dataFrame;
         else
@@ -315,15 +327,15 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
             if (newNames.contains(name))
                 throw new DataFrameException("Column name (%s) is duplicated.".formatted(name));
         }
-        for (String name: newDataFrame.header) {
+        for (String name: newDataFrame.header)
             this.addColumn(newDataFrame.getColumn(name));
-        }
+
         return this;
     }
 
     @Override
     public DataFrame concatY(DataFrame dataFrame) throws DataFrameException {
-        NewDataFrame newDataFrame;
+        final NewDataFrame newDataFrame;
         if (dataFrame instanceof NewDataFrame)
             newDataFrame = (NewDataFrame) dataFrame;
         else
@@ -340,9 +352,9 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
                         (header.getColumnClass(name).getSimpleName(),
                         this.header.getColumnClass(name).getSimpleName()));
         }
-        for (DataFrameRow row : newDataFrame) {
+        for (DataFrameRow row : newDataFrame)
             this.appendRow(row);
-        }
+
         return this;
     }
     //</editor-fold>
@@ -380,26 +392,23 @@ public class NewDataFrame implements DataFrame, Iterable<DataFrameRow> {
     }
 
     @Override
-    public void resetIndices() {
+    public DataFrame resetIndices() {
         indices.resetIndices();
         for (String name : names) {
             columns.get(name).resetIndices();
         }
+        return this;
     }
 
     @Override
-    public void print() {
-        try {
-            for (String name : names)
-                System.out.print("\t" + name);
-            for (int i = 0; i < rowNum; i++) {
-                System.out.println();
-                System.out.print(indices.get(i) + "\t" + getRow(i));
-            }
+    public void print() throws DataFrameException {
+        for (String name : names)
+            System.out.print("\t" + name);
+        for (int i = 0; i < rowNum; i++) {
             System.out.println();
-        } catch (DataFrameException e) {
-            e.addSuppressed(e);
+            System.out.print(indices.get(i) + "\t" + getRow(i));
         }
+        System.out.println();
     }
 
     @Override

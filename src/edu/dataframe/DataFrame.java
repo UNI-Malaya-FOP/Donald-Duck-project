@@ -2,6 +2,9 @@ package edu.dataframe;
 
 import edu.dataframe.column.*;
 
+import java.io.*;
+import java.net.URL;
+import java.util.List;
 import java.util.Comparator;
 
 public interface DataFrame extends Iterable<DataFrameRow> {
@@ -91,8 +94,8 @@ public interface DataFrame extends Iterable<DataFrameRow> {
 
     /**
      * Get row by its position.
-     * @param position of row
-     * @return row at specified index
+     * @param position of row.
+     * @return row at specified index.
      * @throws DataFrameException if position is more than row number.
      */
     DataFrameRow getRow(int position) throws DataFrameException;
@@ -112,6 +115,22 @@ public interface DataFrame extends Iterable<DataFrameRow> {
      * @throws DataFrameException if Object length does not match or type does not match.
      */
     DataFrame append(Object... elements) throws DataFrameException;
+
+    /**
+     * Append row to the DataFrame.
+     * @param row to append.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if row length does not match or type does not match.
+     */
+    DataFrame appendRow(DataFrameRow row) throws DataFrameException;
+
+    /**
+     * Append multiple row to the DataFrame.
+     * @param rows to append.
+     * @return DataFrame for method chain.
+     * @throws DataFrameException if row length does not match or type does not match.
+     */
+    DataFrame appendRows(List<DataFrameRow> rows) throws DataFrameException;
 
     /**
      * Delete row at specific index.
@@ -257,7 +276,7 @@ public interface DataFrame extends Iterable<DataFrameRow> {
     /**
      * Reset indices of the dataframe.
      */
-    void resetIndices();
+    DataFrame resetIndices();
 
     /**
      * Create an empty new DataFrame.
@@ -267,7 +286,34 @@ public interface DataFrame extends Iterable<DataFrameRow> {
         return new NewDataFrame();
     }
 
-    void print();
+    /**
+     * Create a new DataFrame out of CSV File.
+     * @param file to read.
+     * @return DataFrame for method chain.
+     */
+    static DataFrame load(File file) throws DataFrameException, IOException {
+        return new DataFrameBuilder().load(new FileReader(file)).build();
+    }
+
+    /**
+     * Create a new DataFrame out of CSV File.
+     * @param file to read.
+     * @return DataFrame for method chain.
+     */
+    static DataFrame load(String str) throws DataFrameException, IOException {
+        return new DataFrameBuilder().load(new StringReader(str)).build();
+    }
+
+    /**
+     * Create a new DataFrame out of CSV File.
+     * @param file to read.
+     * @return DataFrame for method chain.
+     */
+    static DataFrame load(URL url) throws DataFrameException, IOException {
+        return new DataFrameBuilder().load(new InputStreamReader(url.openStream())).build();
+    }
+
+    void print() throws DataFrameException;
 
     /**
      * Print debug version for debugging
