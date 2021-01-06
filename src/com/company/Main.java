@@ -21,6 +21,10 @@ public class Main {
         File file2 = new File("src\\resources\\CAvideos.csv");
         DataFrame dt3 = DataFrame.load(file2);
         dt3.print();
+
+        String str = "Item_name,Price,Quantity\nHeadphone,111.11,10\nSmartphone, 555.55,7\nGaming rig, 999.99,1";
+        DataFrame dt4 = DataFrame.load(str);
+        dt4.print();
     }
 }
 
