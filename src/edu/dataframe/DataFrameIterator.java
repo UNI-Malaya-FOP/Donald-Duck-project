@@ -4,9 +4,9 @@ import java.util.Iterator;
 
 class DataFrameIterator implements Iterator<DataFrameRow> {
 
-    private int index;
+    private int index = 0;
+    private final DataFrame dataFrame;
 
-    DataFrame dataFrame;
     public DataFrameIterator(DataFrame dataFrame) {
         this.dataFrame = dataFrame;
     }

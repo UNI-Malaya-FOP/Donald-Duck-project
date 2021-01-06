@@ -53,6 +53,10 @@ public class DataFrameIndices {
         indices.addAll(this.indices);
     }
 
+    void copyTo(DataFrameIndices indices) {
+        copyTo(indices.indices);
+    }
+
     public void copyTo(DataFrameColumn<?> column) {
         copyTo(column.getIndices().indices);
     }
